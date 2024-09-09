@@ -1,4 +1,4 @@
-package database
+package db
 
 import (
 	"github.com/amacneil/dbmate/v2/pkg/dbmate"
@@ -8,7 +8,6 @@ import (
 
 func ApplyMigrations() error {
 	cfg := config.Database{}
-	// Валидация переменных окружения
 	if err := env.Parse(&cfg); err != nil {
 		return err
 	}

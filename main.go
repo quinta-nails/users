@@ -3,7 +3,7 @@ package main
 import (
 	_ "github.com/amacneil/dbmate/v2/pkg/driver/postgres"
 	"github.com/joho/godotenv"
-	"github.com/quinta-nails/users/internal/database"
+	"github.com/quinta-nails/users/internal/db"
 	"log"
 )
 
@@ -13,7 +13,7 @@ func init() {
 		log.Fatal(`Error loading .env file`)
 	}
 
-	err = database.ApplyMigrations()
+	err = db.ApplyMigrations()
 	if err != nil {
 		log.Fatal(err)
 	}
