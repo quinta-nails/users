@@ -1,0 +1,62 @@
+name: Go Generate
+
+on:
+  push:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Cache Go modules
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: "${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}"
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Cache envdoc
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/envdoc
+        key: "${{ runner.os }}-envdoc-${{ hashFiles('**/go.sum') }}"
+        restore-keys: |
+          ${{ runner.os }}-envdoc-
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.23'
+
+    - name: Install envdoc
+      run: |
+        if [ ! -d ~/.cache/envdoc ]; then
+          mkdir -p ~/.cache/envdoc
+          GOBIN=~/.cache/sqlc go install github.com/g4s8/envdoc@latest
+        fi
+      env:
+        GOBIN: ~/.cache/envdoc
+
+    - name: Generate go code
+      run: go generate
+
+    - name: Check for changes
+      run: |
+        if [ -n "$(git status --porcelain)" ]; then
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Update generated go code"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+        else
+          echo "No changes to commit"
+        fi
