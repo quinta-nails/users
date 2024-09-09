@@ -3,6 +3,9 @@ name: SQLC Generate
 on:
   push:
 
+permissions:
+  contents: write
+
 jobs:
   generate:
     runs-on: ubuntu-latest
