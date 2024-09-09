@@ -1,5 +1,8 @@
 name: SQLC Generate
 
+on:
+  push:
+
 jobs:
   generate:
     runs-on: ubuntu-latest
