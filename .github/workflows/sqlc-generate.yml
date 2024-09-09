@@ -17,9 +17,17 @@ jobs:
         path: |
           ~/.cache/go-build
           /go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        key: "${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}"
         restore-keys: |
           ${{ runner.os }}-go-
+
+    - name: Cache sqlc
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/sqlc
+        key: "${{ runner.os }}-sqlc-${{ hashFiles('**/go.sum') }}"
+        restore-keys: |
+          ${{ runner.os }}-sqlc-
 
     - name: Set up Go
       uses: actions/setup-go@v5
@@ -27,10 +35,16 @@ jobs:
         go-version: '1.23'
 
     - name: Install sqlc
-      run: go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+      run: |
+        if [ ! -d ~/.cache/sqlc ]; then
+          mkdir -p ~/.cache/sqlc
+          GOBIN=~/.cache/sqlc go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+        fi
+      env:
+        GOBIN: ~/.cache/sqlc
 
     - name: Generate SQLC code
-      run: sqlc generate
+      run: ~/.cache/sqlc/sqlc generate
 
     - name: Check for changes
       run: |
