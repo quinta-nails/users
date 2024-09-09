@@ -53,3 +53,48 @@ jobs:
         else
           echo "No changes to commit" >> $GITHUB_STEP_SUMMARY
         fi
+  envdoc:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '${{ env.GO_VERSION }}'
+
+    - name: Cache envdoc
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/envdoc
+        key: "${{ runner.os }}-envdoc-${{ hashFiles('**/go.sum') }}"
+        restore-keys: |
+          ${{ runner.os }}-envdoc-
+
+    - name: Install envdoc
+      run: |
+        if [ ! -d ~/.cache/envdoc ]; then
+          mkdir -p ~/.cache/envdoc
+          GOBIN=~/.cache/envdoc go install github.com/g4s8/envdoc@latest
+        fi
+        echo "~/.cache/envdoc" >> $GITHUB_PATH
+
+    - name: Generate envdoc code
+      run: go generate
+
+    - name: Check for changes
+      run: |
+        if [ -n "$(git status --porcelain)" ]; then
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Update generated envdoc code"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          
+          NEW_COMMIT_HASH=$(git rev-parse HEAD)
+          echo "Pushed changes: [$NEW_COMMIT_HASH](https://github.com/${{ github.repository }}/commit/$NEW_COMMIT_HASH)"  >> $GITHUB_STEP_SUMMARY
+        else
+          echo "No changes to commit" >> $GITHUB_STEP_SUMMARY
+        fi
