@@ -1,4 +1,4 @@
-//go:generate envdoc -format dotenv -output .env.example -dir . -files * -types *Config
+//go:generate ~/.cache/envdoc -format dotenv -output .env.example -dir . -files * -types *Config
 package main
 
 import (
