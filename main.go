@@ -1,0 +1,24 @@
+package main
+
+import (
+	_ "github.com/amacneil/dbmate/v2/pkg/driver/postgres"
+	"github.com/joho/godotenv"
+	"github.com/quinta-nails/users/internal/database"
+	"log"
+)
+
+func init() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal(`Error loading .env file`)
+	}
+
+	err = database.ApplyMigrations()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func main() {
+	println(1)
+}
