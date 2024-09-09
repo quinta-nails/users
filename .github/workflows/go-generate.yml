@@ -15,6 +15,19 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Check for changes in specific files
+      id: check_changes
+      run: |
+        CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
+        echo "changed_files=$CHANGED_FILES" >> $GITHUB_ENV
+
+        if echo "$CHANGED_FILES" | grep -qE 'internal/db/query.sql|db/migrations/'; then
+          echo "Changes detected in internal/db/query.sql or db/migrations/"
+        else
+          echo "No relevant changes detected, skipping remaining steps." >> $GITHUB_STEP_SUMMARY
+          exit 0
+        fi
+
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
