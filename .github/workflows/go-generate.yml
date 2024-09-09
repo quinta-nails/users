@@ -6,31 +6,44 @@ on:
 permissions:
   contents: write
 
+common-steps: &common-steps
+  - name: Checkout repository
+    uses: actions/checkout@v4
+
+  - name: Cache Go modules
+    uses: actions/cache@v4
+    with:
+      path: |
+        ~/.cache/go-build
+        ~/go/pkg/mod
+      key: "${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}"
+      restore-keys: |
+        ${{ runner.os }}-go-
+
+  - name: Set up Go
+    uses: actions/setup-go@v5
+    with:
+      go-version: '1.23'
+
+push-changes: &push-changes
+  - name: Check for changes
+    run: |
+      if [ -n "$(git status --porcelain)" ]; then
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add .
+        git commit -m "Update generated go code"
+        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+      else
+        echo "No changes to commit"
+      fi
+
 jobs:
-  generate:
+  sqlc:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Cache Go modules
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.cache/go-build
-          ~/go/pkg/mod
-        key: "${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}"
-        restore-keys: |
-          ${{ runner.os }}-go-
-
-#    - name: Cache envdoc
-#      uses: actions/cache@v4
-#      with:
-#        path: ~/.cache/envdoc
-#        key: "${{ runner.os }}-envdoc-${{ hashFiles('**/go.sum') }}"
-#        restore-keys: |
-#          ${{ runner.os }}-envdoc-
+    - <<: *common-steps
 
     - name: Cache SQLC
       uses: actions/cache@v4
@@ -39,21 +52,6 @@ jobs:
         key: "${{ runner.os }}-sqlc-${{ hashFiles('**/go.sum') }}"
         restore-keys: |
           ${{ runner.os }}-sqlc-
-
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.23'
-
-#    - name: Install envdoc
-#      run: |
-#        if [ ! -d ~/.cache/envdoc ]; then
-#          mkdir -p ~/.cache/envdoc
-#          GOBIN=~/.cache/envdoc go install github.com/g4s8/envdoc@latest
-#        fi
-#        echo "~/.cache/envdoc" >> $GITHUB_PATH
-#      env:
-#        GOBIN: ~/.cache/envdoc
 
     - name: Install SQLC
       run: |
@@ -65,20 +63,7 @@ jobs:
       env:
         GOBIN: ~/.cache/sqlc
 
-#    - name: Generate go code
-#      run: go generate
-
     - name: Generate SQLC code
       run: ~/.cache/sqlc/sqlc generate
 
-    - name: Check for changes
-      run: |
-        if [ -n "$(git status --porcelain)" ]; then
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "Update generated go code"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-        else
-          echo "No changes to commit"
-        fi
+    - <<: *push-changes
