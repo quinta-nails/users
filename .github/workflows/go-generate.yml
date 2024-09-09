@@ -41,7 +41,7 @@ jobs:
       run: |
         if [ ! -d ~/.cache/envdoc ]; then
           mkdir -p ~/.cache/envdoc
-          GOBIN=~/.cache/sqlc go install github.com/g4s8/envdoc@latest
+          GOBIN=~/.cache/envdoc go install github.com/g4s8/envdoc@latest
         fi
       env:
         GOBIN: ~/.cache/envdoc
