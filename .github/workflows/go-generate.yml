@@ -61,7 +61,7 @@ jobs:
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           
           NEW_COMMIT_HASH=$(git rev-parse HEAD)
-          echo "[$NEW_COMMIT_HASH](https://github.com/${{ github.repository }}/commit/$NEW_COMMIT_HASH)"  >> $GITHUB_STEP_SUMMARY
+          echo "Pushed changes: [$NEW_COMMIT_HASH](https://github.com/${{ github.repository }}/commit/$NEW_COMMIT_HASH)"  >> $GITHUB_STEP_SUMMARY
         else
           echo "No changes to commit" >> $GITHUB_STEP_SUMMARY
         fi
