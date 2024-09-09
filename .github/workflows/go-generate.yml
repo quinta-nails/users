@@ -32,6 +32,14 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-envdoc-
 
+    - name: Cache SQLC
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/sqlc
+        key: "${{ runner.os }}-sqlc-${{ hashFiles('**/go.sum') }}"
+        restore-keys: |
+          ${{ runner.os }}-sqlc-
+
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
@@ -43,11 +51,25 @@ jobs:
           mkdir -p ~/.cache/envdoc
           GOBIN=~/.cache/envdoc go install github.com/g4s8/envdoc@latest
         fi
+        echo "~/.cache/envdoc" >> $GITHUB_PATH
       env:
         GOBIN: ~/.cache/envdoc
 
+    - name: Install SQLC
+      run: |
+        if [ ! -d ~/.cache/sqlc ]; then
+          mkdir -p ~/.cache/sqlc
+          GOBIN=~/.cache/sqlc go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+        fi
+        echo "~/.cache/sqlc" >> $GITHUB_PATH
+      env:
+        GOBIN: ~/.cache/sqlc
+
     - name: Generate go code
       run: go generate
+
+    - name: Generate SQLC code
+      run: ~/.cache/sqlc/sqlc generate
 
     - name: Check for changes
       run: |
