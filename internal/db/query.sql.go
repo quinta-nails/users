@@ -44,6 +44,26 @@ func (q *Queries) GetAll(ctx context.Context) ([]User, error) {
 	return items, nil
 }
 
+const getByID = `-- name: GetByID :one
+SELECT id, telegram_id, first_name, last_name, username, created_at
+FROM users
+WHERE id = $1
+`
+
+func (q *Queries) GetByID(ctx context.Context, id int64) (User, error) {
+	row := q.db.QueryRowContext(ctx, getByID, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.TelegramID,
+		&i.FirstName,
+		&i.LastName,
+		&i.Username,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const getByTelegramID = `-- name: GetByTelegramID :one
 SELECT id, telegram_id, first_name, last_name, username, created_at
 FROM users
