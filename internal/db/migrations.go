@@ -7,7 +7,7 @@ import (
 )
 
 func ApplyMigrations() error {
-	cfg := config.Database{}
+	cfg := config.DatabaseConfig{}
 	if err := env.Parse(&cfg); err != nil {
 		return err
 	}
