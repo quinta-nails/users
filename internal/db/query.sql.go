@@ -9,6 +9,61 @@ import (
 	"context"
 )
 
+const getAll = `-- name: GetAll :many
+SELECT id, telegram_id, first_name, last_name, username, created_at
+FROM users
+`
+
+func (q *Queries) GetAll(ctx context.Context) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, getAll)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []User
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.TelegramID,
+			&i.FirstName,
+			&i.LastName,
+			&i.Username,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getByID = `-- name: GetByID :one
+SELECT id, telegram_id, first_name, last_name, username, created_at
+FROM users
+WHERE id = $1
+`
+
+func (q *Queries) GetByID(ctx context.Context, id int64) (User, error) {
+	row := q.db.QueryRowContext(ctx, getByID, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.TelegramID,
+		&i.FirstName,
+		&i.LastName,
+		&i.Username,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const getByTelegramID = `-- name: GetByTelegramID :one
 SELECT id, telegram_id, first_name, last_name, username, created_at
 FROM users
