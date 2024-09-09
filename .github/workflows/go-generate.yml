@@ -45,8 +45,6 @@ jobs:
           GOBIN=~/.cache/sqlc go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
         fi
         echo "~/.cache/sqlc" >> $GITHUB_PATH
-      env:
-        GOBIN: ~/.cache/sqlc
 
     - name: Generate SQLC code
       run: ~/.cache/sqlc/sqlc generate
