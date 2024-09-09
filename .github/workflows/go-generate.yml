@@ -59,6 +59,8 @@ jobs:
           git add .
           git commit -m "Update generated go code"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          NEW_COMMIT_HASH=$(git rev-parse HEAD)
+          echo "Pushed changes: $NEW_COMMIT_HASH"  >> $GITHUB_STEP_SUMMARY
         else
-          echo "No changes to commit"
+          echo "No changes to commit" >> $GITHUB_STEP_SUMMARY
         fi
