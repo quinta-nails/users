@@ -47,7 +47,7 @@ jobs:
         echo "~/.cache/sqlc" >> $GITHUB_PATH
 
     - name: Generate SQLC code
-      run: ~/.cache/sqlc/sqlc generate
+      run: sqlc generate
 
     - name: Check for changes
       run: |
