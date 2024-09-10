@@ -79,8 +79,7 @@ jobs:
 
     - name: Check for changes
       run: |
-        if [ -n "$(git status --porcelain)" ]; then
-        else
+        if [ -z "$(git status --porcelain)" ]; then
           echo "No changes to commit" >> $GITHUB_STEP_SUMMARY
           exit 1
         fi
