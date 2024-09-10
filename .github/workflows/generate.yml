@@ -40,19 +40,25 @@ jobs:
       run: sqlc generate
 
     - name: Check for changes
+      id: check-changes
       run: |
         if [ -n "$(git status --porcelain)" ]; then
-          git config --global user.name "github-actions[bot]"
+          echo "HAS_CHANGED=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "No changes to commit" >> $GITHUB_STEP_SUMMARY
+        fi
+
+    - name: Push sqlc generated code
+      if: steps.check-changes.outputs.HAS_CHANGED == 'true'
+      run: |
+        git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add .
           git commit -m "Update generated go code"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-          
+        
           NEW_COMMIT_HASH=$(git rev-parse HEAD)
           echo "Pushed changes: [$NEW_COMMIT_HASH](https://github.com/${{ github.repository }}/commit/$NEW_COMMIT_HASH)"  >> $GITHUB_STEP_SUMMARY
-        else
-          echo "No changes to commit" >> $GITHUB_STEP_SUMMARY
-        fi
   envdoc:
     runs-on: ubuntu-latest
 
