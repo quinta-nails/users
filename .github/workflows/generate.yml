@@ -83,11 +83,11 @@ jobs:
         if [ -n "$(git status --porcelain)" ]; then
           echo "No changes to commit" >> $GITHUB_STEP_SUMMARY
         else
-          echo "HAS_CHANGED=true" >> $GITHUB_ENV
+          echo "has-changed=true" >> GITHUB_OUTPUT
         fi
 
     - name: Push .env.example
-      if: steps.check_changes.outputs.HAS_CHANGED == 'true'
+      if: steps.check_changes.outputs.has-changed == 'true'
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
