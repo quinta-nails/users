@@ -81,9 +81,9 @@ jobs:
       id: check-changes
       run: |
         if [ -n "$(git status --porcelain)" ]; then
-          echo "No changes to commit" >> $GITHUB_STEP_SUMMARY
-        else
           echo "HAS_CHANGED=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "No changes to commit" >> $GITHUB_STEP_SUMMARY
         fi
 
     - name: Push .env.example
