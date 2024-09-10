@@ -76,9 +76,13 @@ jobs:
 
     - name: Generate envdoc code
       run: |
+        ls -a >> $GITHUB_STEP_SUMMARY
         echo '//go:generate envdoc -format dotenv -output .env.example -dir . -files * -types *Config\npackage main' > envdoc.go
+        ls -a >> $GITHUB_STEP_SUMMARY
         go generate
+        ls -a >> $GITHUB_STEP_SUMMARY
         rm envdoc.go
+        ls -a >> $GITHUB_STEP_SUMMARY
 
     - name: Check for changes
       run: |
