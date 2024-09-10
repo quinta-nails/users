@@ -103,3 +103,22 @@ jobs:
           
         NEW_COMMIT_HASH=$(git rev-parse HEAD)
         echo "Pushed .env.example changes: [$NEW_COMMIT_HASH](https://github.com/${{ github.repository }}/commit/$NEW_COMMIT_HASH)"  >> $GITHUB_STEP_SUMMARY
+
+    - name: Update Wiki
+      if: steps.check-changes.outputs.HAS_CHANGED == 'true'
+      run: |
+        echo '//go:generate envdoc -format markdown -output EnvironmentVariables.md -dir . -files * -types *Config\npackage main' > envdoc.go
+        go generate
+        
+        git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git wiki
+        cp EnvironmentVariables.md wiki/EnvironmentVariables.md
+        
+        cd wiki
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add .
+        git commit -m "Update Wiki environment variables"
+        git push
+        
+        NEW_COMMIT_HASH=$(git rev-parse HEAD)
+        echo "Pushed Wiki environment variables changes: [$NEW_COMMIT_HASH](https://github.com/${{ github.repository }}/commit/$NEW_COMMIT_HASH)"  >> $GITHUB_STEP_SUMMARY
