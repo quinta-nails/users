@@ -86,7 +86,7 @@ jobs:
     - name: Check for changes
       id: check-changes-config
       run: |
-        echo $(git status --porcelain)
+        echo $(git status --porcelain) >> $GITHUB_STEP_SUMMARY
         if [ -n "$(git status --porcelain)" ]; then
           echo "HAS_CHANGED_CONFIG=true" >> "$GITHUB_OUTPUT"
         else
