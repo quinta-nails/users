@@ -1,4 +1,3 @@
-//go:generate envdoc -format dotenv -output .env.example -dir . -files * -types *Config
 package main
 
 import (
