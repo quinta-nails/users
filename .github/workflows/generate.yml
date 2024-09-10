@@ -101,7 +101,9 @@ jobs:
     - name: Update Wiki
       if: steps.check-changes.outputs.HAS_CHANGED == 'true'
       run: |
-        echo "//go:generate envdoc -format markdown -output EnvironmentVariables.md -dir . -files * -types *Config\npackage main" > envdoc.go
+        echo "//go:generate envdoc -format markdown -output EnvironmentVariables.md -dir . -files * -types *Config
+        package main
+        " > envdoc.go
         go generate
         
         git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git wiki
