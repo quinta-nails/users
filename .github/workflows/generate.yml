@@ -84,7 +84,7 @@ jobs:
       run: rm envdoc.go
 
     - name: Check for changes
-      id: check-changes
+      id: check-changes-config
       run: |
         if [ -n "$(git status --porcelain)" ]; then
           echo "HAS_CHANGED=true" >> "$GITHUB_OUTPUT"
@@ -93,7 +93,7 @@ jobs:
         fi
 
     - name: Push .env.example
-      if: steps.check-changes.outputs.HAS_CHANGED == 'true'
+      if: steps.check-changes-config.outputs.HAS_CHANGED == 'true'
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -105,7 +105,7 @@ jobs:
         echo "Pushed .env.example changes: [$NEW_COMMIT_HASH](https://github.com/${{ github.repository }}/commit/$NEW_COMMIT_HASH)"  >> $GITHUB_STEP_SUMMARY
 
     - name: Update Wiki
-      if: steps.check-changes.outputs.HAS_CHANGED == 'true'
+      if: steps.check-changes-config.outputs.HAS_CHANGED == 'true'
       run: |
         echo '//go:generate envdoc -format markdown -output EnvironmentVariables.md -dir . -files * -types *Config\npackage main' > envdoc.go
         go generate
