@@ -74,14 +74,11 @@ jobs:
     - name: Install envdoc
       run: go install github.com/g4s8/envdoc@latest
 
-    - name: Create envdoc.go
-      run: echo '//go:generate envdoc -format dotenv -output .env.example -dir . -files * -types *Config\npackage main' > envdoc.go
-
     - name: Generate envdoc code
-      run: go generate
-
-    - name: Remove envdoc.go
-      run: rm envdoc.go
+      run: |
+        echo '//go:generate envdoc -format dotenv -output .env.example -dir . -files * -types *Config\npackage main' > envdoc.go
+        go generate
+        rm envdoc.go
 
     - name: Check for changes
       run: |
