@@ -106,7 +106,7 @@ jobs:
         " > envdoc.go
         go generate
         
-        git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki wiki
+        git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git wiki
         cp EnvironmentVariables.md wiki/EnvironmentVariables.md
         
         cd wiki
