@@ -78,13 +78,16 @@ jobs:
       run: rm envdoc.go
 
     - name: Check for changes
+      id: check_changes
       run: |
-        if [ -z "$(git status --porcelain)" ]; then
+        if [ -n "$(git status --porcelain)" ]; then
           echo "No changes to commit" >> $GITHUB_STEP_SUMMARY
-          exit 1
+        else
+          echo "HAS_CHANGED=true" >> $GITHUB_ENV
         fi
 
     - name: Push .env.example
+      if: steps.check_changes.outputs.HAS_CHANGED == 'true'
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
