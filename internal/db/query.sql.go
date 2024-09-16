@@ -9,21 +9,19 @@ import (
 	"context"
 )
 
-const getByTelegramID = `-- name: GetByTelegramID :one
-SELECT id, telegram_id, first_name, last_name, username, created_at
+const getByID = `-- name: GetByID :one
+SELECT id, first_name, last_name, created_at
 FROM users
-WHERE telegram_id = $1
+WHERE id = $1
 `
 
-func (q *Queries) GetByTelegramID(ctx context.Context, telegramID int64) (User, error) {
-	row := q.db.QueryRowContext(ctx, getByTelegramID, telegramID)
+func (q *Queries) GetByID(ctx context.Context, id int64) (User, error) {
+	row := q.db.QueryRowContext(ctx, getByID, id)
 	var i User
 	err := row.Scan(
 		&i.ID,
-		&i.TelegramID,
 		&i.FirstName,
 		&i.LastName,
-		&i.Username,
 		&i.CreatedAt,
 	)
 	return i, err

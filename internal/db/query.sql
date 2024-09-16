@@ -1,4 +1,4 @@
--- name: GetByTelegramID :one
+-- name: GetByID :one
 SELECT *
 FROM users
-WHERE telegram_id = $1;
+WHERE id = $1;

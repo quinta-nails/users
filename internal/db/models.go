@@ -10,10 +10,8 @@ import (
 )
 
 type User struct {
-	ID         int64
-	TelegramID int64
-	FirstName  string
-	LastName   sql.NullString
-	Username   sql.NullString
-	CreatedAt  time.Time
+	ID        int64
+	FirstName string
+	LastName  sql.NullString
+	CreatedAt time.Time
 }
